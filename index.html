@@ -1,0 +1,28 @@
+<button id="write">write</button>
+<button id="read">read</button>
+
+<script type="module">
+  import { OPFSWriter } from "./OPFSWriter.js";
+  import { getDirectoryHandleFromPath } from "./utils.js";
+
+  const writeBtn = document.querySelector("#write");
+
+  const root = await navigator.storage.getDirectory();
+
+  const directory = ["foo", "bar"];
+
+  const dir = await getDirectoryHandleFromPath(directory);
+
+  const myFile = new File(["test"], "my-file.txt", { type: "text/plain" });
+
+  const writer = new OPFSWriter();
+
+  writeBtn.addEventListener("click", async () => {
+    await writer.write(directory, myFile.name, await myFile.arrayBuffer());
+
+    const fileHandle = await dir.getFileHandle("my-file.txt");
+    const file = await fileHandle.getFile();
+
+    console.log(await myFile.text(), await file.text());
+  });
+</script>
